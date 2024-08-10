@@ -3,7 +3,7 @@ package in.rajat.rLang.expressions;
 public class LiteralExpr implements Expression {
     final Object value;
 
-    LiteralExpr(Object value) {
+    public LiteralExpr(Object value) {
         this.value = value;
     }
 

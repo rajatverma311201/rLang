@@ -1,7 +1,6 @@
 package in.rajat.rLang;
 
 import in.rajat.rLang.enums.TokenType;
-import in.rajat.rLang.interfaces.RScannerIF;
 import in.rajat.rLang.models.Token;
 
 import java.util.ArrayList;
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class RScanner implements RScannerIF {
+public class RScanner {
 
     private final String source;
     private final List<Token> tokens = new ArrayList<>();
@@ -29,7 +28,7 @@ public class RScanner implements RScannerIF {
         keywords.put("for", TokenType.FOR);
         keywords.put("fun", TokenType.FUN);
         keywords.put("if", TokenType.IF);
-        keywords.put("nil", TokenType.NIL);
+        keywords.put("NULL", TokenType.NULL);
         keywords.put("or", TokenType.OR);
         keywords.put("print", TokenType.PRINT);
         keywords.put("return", TokenType.RETURN);
