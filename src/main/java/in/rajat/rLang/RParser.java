@@ -10,12 +10,19 @@ import java.util.List;
 /**
  * CONTEXT FREE GRAMMAR
  * PARSER   RECURSIVE DESCENT PARSING
+ * <p>
  * expression     → equality ;
+ * <br>
  * equality       → comparison ( ( "!=" | "==" ) comparison )* ;
+ * <br>
  * comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+ * <br>
  * term           → factor ( ( "-" | "+" ) factor )* ;
+ * <br>
  * factor         → unary ( ( "/" | "*" ) unary )* ;
+ * <br>
  * unary          → ( "!" | "-" ) unary | primary ;
+ * <br>
  * primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
  */
 public class RParser {
@@ -24,6 +31,22 @@ public class RParser {
 
     RParser(List<Token> tokens) {
         this.tokens = tokens;
+    }
+
+    public Expression parse() {
+        try {
+            return expression();
+        } catch (ParseError error) {
+            return null;
+        }
+    }
+
+    private static class ParseError extends RuntimeException {
+    }
+
+    private ParseError error(Token token, String message) {
+        RLang.error(token, message);
+        return new ParseError();
     }
 
     private Expression expression() {
@@ -103,13 +126,21 @@ public class RParser {
         if (matchTokenTypes(TokenType.LEFT_PAREN)) {
             Expression expr = expression();
 
-            // TODO  -  EXPECT a CLOSING ')'
+            consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
 
             return new GroupingExpr(expr);
         }
-        return null;
+//        System.out.println(peek());
+
+        throw error(peek(), "Expect expression.");
     }
 
+
+    private Token consume(TokenType type, String message) {
+        if (checkTokenType(type)) return nextToken();
+
+        throw error(peek(), message);
+    }
 
     private boolean checkTokenType(TokenType type) {
         if (isAtEnd()) {
@@ -145,5 +176,27 @@ public class RParser {
 
     private Token previous() {
         return tokens.get(current - 1);
+    }
+
+    private void synchronize() {
+        nextToken();
+
+        while (!isAtEnd()) {
+            if (previous().type == TokenType.SEMICOLON) return;
+
+            switch (peek().type) {
+                case CLASS:
+                case FUN:
+                case VAR:
+                case FOR:
+                case IF:
+                case WHILE:
+                case PRINT:
+                case RETURN:
+                    return;
+            }
+
+            nextToken();
+        }
     }
 }

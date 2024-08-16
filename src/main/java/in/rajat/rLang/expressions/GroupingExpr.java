@@ -1,7 +1,7 @@
 package in.rajat.rLang.expressions;
 
 public class GroupingExpr implements Expression {
-    final Expression expression;
+    public final Expression expression;
 
     public GroupingExpr(Expression expression) {
         this.expression = expression;

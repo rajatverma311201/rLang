@@ -1,5 +1,7 @@
 package in.rajat.rLang;
 
+import in.rajat.rLang.enums.TokenType;
+import in.rajat.rLang.expressions.Expression;
 import in.rajat.rLang.models.Token;
 
 import java.io.BufferedReader;
@@ -40,6 +42,7 @@ public class RLang {
         for (; ; ) {
             System.out.print("> ");
             String line = reader.readLine();
+//            System.out.println(line);
             if (line == null || line.equals("exit")) break;
             run(line);
         }
@@ -49,6 +52,12 @@ public class RLang {
         RScanner scanner = new RScanner(source);
         List<Token> tokens = scanner.scanTokens();
 
+        RParser parser = new RParser(tokens);
+        Expression expression = parser.parse();
+
+        // Stop if there was a syntax error.
+        if (hadError) return;
+
         for (Token token : tokens) {
             System.out.println(token);
         }
@@ -56,6 +65,14 @@ public class RLang {
 
     static void error(int line, String message) {
         report(line, "", message);
+    }
+
+    static void error(Token token, String message) {
+        if (token.type == TokenType.EOF) {
+            report(token.line, " at end", message);
+        } else {
+            report(token.line, " at '" + token.lexeme + "'", message);
+        }
     }
 
     private static void report(int line, String where, String message) {
